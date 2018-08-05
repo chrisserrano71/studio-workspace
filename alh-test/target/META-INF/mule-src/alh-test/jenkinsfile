@@ -1,0 +1,14 @@
+pipeline{
+ agent any
+ stages {
+ 	stage ('Build'){
+ 		steps {
+ 			withMaven(maven:'maven'){
+ 				bat 'mvn -f alh-test\pom.xml clean compile'
+ 			}
+ 		}
+ 	}
+ 
+ }
+
+}
