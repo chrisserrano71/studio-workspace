@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+
+	
+	<flow name="PaymentOrder-e-api-main">
+        <http:listener doc:name="Listener" doc:id="45b29ceb-77c5-46dc-a81e-ab0f1e8b0e4f" path="/PaymentOrder-e-api/*" config-ref="PaymentOrder-e-api-httpListenerConfig">
+           <http:response statusCode="#[vars.httpStatus default 200]">
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+            </http:error-response>
+        </http:listener>
+		<set-variable value="#[attributes" doc:name="Set Variable" doc:id="d8488ff7-1f5b-4b5e-8e77-f340f39cbfaf" variableName="tetd"/>
+		<validation:is-email doc:name="Is email" doc:id="737787b6-512c-48bc-a21b-e03d4e865414" email="var.email"/>
+		<apikit:router config-ref="PaymentOrder-e-api-config" doc:name="APIkit Router"/>
+        <error-handler>
+            <on-error-propagate type="APIKIT:BAD_REQUEST">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="da332bf4-7755-4588-8ed0-07ac8db7dd96">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Bad request"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[400]]></ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Method not allowed"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not acceptable"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Unsupported media type"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not Implemented"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <!-- 
+    <flow name="PaymentOrder-e-api-console">
+        <http:listener path="/console/*" doc:name="Listener" config-ref="HTTP_Domain_Listener_config">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="PaymentOrder-e-api-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+     -->
+    <flow name="post:\customer\(id)\payment-orders:application\json:PaymentOrder-e-api-config">
+        <logger level="INFO" doc:name="Logger" doc:id="cc23184c-2b98-4fef-992b-833da77ea44b" message="test" />
+		<ee:transform doc:name="Transform Message" doc:id="20f747dc-b761-489e-90f6-36c2504f9b16" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	debtorAccount: payload.debtorAccount,
+	requestedExecutionDate: payload.requestedExecutionDate,
+	isVirtualTransfer: payload.isVirtualTransfer,
+	paymentType: payload.paymentType,
+	productCode: payload.productCode,
+	cis: attributes.uriParams.id,
+	referralId: payload.referralId,
+	creditTransferTransactionInformation: payload.creditTransferTransactionInformation map ( creditTransferTransactionInformation , indexOfCreditTransferTransactionInformation ) -> {
+		instructedAmount: creditTransferTransactionInformation.instructedAmount,
+		creditor: creditTransferTransactionInformation.creditor,
+		creditorAccount: creditTransferTransactionInformation.creditorAccount
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="8c0edb04-533f-4a8c-8212-b2c2c525e605" message="#[payload]"/>
+		<set-variable value="#[payload.isVirtualTransfer]" doc:name="Set Variable" doc:id="f16b014a-f77c-4562-a38c-7c603b58990d" variableName="isVirtualTransfer"/>
+		<http:request method="POST" doc:name="Request" doc:id="6e164ee2-82be-4e7f-b8b4-0e2f298e40ba" config-ref="HTTP_Request_configuration" path="/payment">
+			<http:headers ><![CDATA[#[output applicaton/java
+---
+{
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+		</http:request>
+		<set-variable value="#[attributes.statusCode]" doc:name="Set Variable" doc:id="db9bf7d0-a80a-43d0-90b9-1ae82cab15f5" variableName="test" />
+		<logger level="INFO" doc:name="Logger" doc:id="6f565b1f-6d69-4d26-bdac-607d3fab41c3" message="#[payload]"/>
+		<choice doc:name="Choice" doc:id="4a3c9543-9cab-464b-93b7-853110c9ad11" >
+			<when expression='#[vars.isVirtualTransfer==false]' >
+				<ee:transform doc:name="Transform Message" doc:id="f81d1835-d976-40fb-be34-84d3061be0f7">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	id: payload.accountTransactionId,
+	status: payload.status
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="32c99ec4-90ca-4ad5-8b3e-53794535f64d" message="Null payload received"/>
+			</otherwise>
+		</choice>
+		<logger level="INFO" message="#[payload]" doc:name="Logger"/>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="103750e5-92f3-41c1-9c15-507261835214" >
+				<logger level="INFO" doc:name="Logger" doc:id="0e157644-ba7d-479a-b761-51e7bea1f337" message="#[exception.getMessage()]" />
+				<set-payload value="#[null]" doc:name="Set Payload" doc:id="4731cc13-06c0-46b3-b80a-f896989e00da" />
+			</on-error-propagate>
+		</error-handler>
+    
+    </flow>
+</mule>

@@ -1,0 +1,488 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension-documentation>
+    <configs>
+        <config name="config">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="expirationPolicy">
+                    <description><![CDATA[Configures the minimum amount of time that a dynamic configuration instance can remain idle before the runtime considers it eligible for expiration. This does not mean that the platform will expire the instance at the exact moment that it becomes eligible. The runtime will actually purge the instances when it sees it fit.]]></description>
+                </parameter>
+            </parameters>
+        </config>
+    </configs>
+    <connections>
+        <connection name="basic">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="authDn">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="authPassword">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="authentication">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="url">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="reconnection">
+                    <description><![CDATA[When the application is deployed, a connectivity test is performed on all connectors. If set to true, deployment will fail if the test doesn't pass after exhausting the associated reconnection strategy]]></description>
+                </parameter>
+                <parameter name="type">
+                    <description><![CDATA[The implementation of the connection to be used.]]></description>
+                </parameter>
+                <parameter name="schemaEnabled">
+                    <description><![CDATA[If set to true, the LDAP connector will use the LDAP schema (only works for LDAP v3) to define the structure of the LDAP entry (or map). This needs to be 'true' in order to use DataSense as it will affect the implementing class of org.mule.module.ldap.api.LDAPEntry attributes.]]></description>
+                </parameter>
+                <parameter name="referral">
+                    <description><![CDATA[Constant that holds the name of the environment property for specifying how referrals encountered by the service provider are to be processed (follow, ignore, throw).]]></description>
+                </parameter>
+                <parameter name="extendedConfiguration">
+                    <description><![CDATA[This is a Map instance holding extended configuration attributes that will be used in the Context environment. When working with TLS connections you need to make sure that the native LDAP pooling functionality is turned off. For example if using JNDI do not use attributes such as 'com.sun.jndi.ldap.connect.pool=true' will cause problems when using TLS.]]></description>
+                </parameter>
+                <parameter name="initialPoolSize">
+                    <description><![CDATA[The string representation of an integer that represents the number of connections per connection identity to create when initially creating a connection for the identity. To disable pooling, just set this value to 0 (zero).]]></description>
+                </parameter>
+                <parameter name="maxPoolSize">
+                    <description><![CDATA[The string representation of an integer that represents the maximum number of connections per connection identity that can be maintained concurrently.]]></description>
+                </parameter>
+                <parameter name="poolTimeout">
+                    <description><![CDATA[The string representation of an integer that represents the number of milliseconds that an idle connection may remain in the pool without being closed and removed from the pool.]]></description>
+                </parameter>
+            </parameters>
+        </connection>
+        <connection name="tls">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="authDn">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="authPassword">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="authentication">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="url">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="reconnection">
+                    <description><![CDATA[When the application is deployed, a connectivity test is performed on all connectors. If set to true, deployment will fail if the test doesn't pass after exhausting the associated reconnection strategy]]></description>
+                </parameter>
+                <parameter name="type">
+                    <description><![CDATA[The implementation of the connection to be used.]]></description>
+                </parameter>
+                <parameter name="schemaEnabled">
+                    <description><![CDATA[If set to true, the LDAP connector will use the LDAP schema (only works for LDAP v3) to define the structure of the LDAP entry (or map). This needs to be 'true' in order to use DataSense as it will affect the implementing class of org.mule.module.ldap.api.LDAPEntry attributes.]]></description>
+                </parameter>
+                <parameter name="referral">
+                    <description><![CDATA[Constant that holds the name of the environment property for specifying how referrals encountered by the service provider are to be processed (follow, ignore, throw).]]></description>
+                </parameter>
+                <parameter name="extendedConfiguration">
+                    <description><![CDATA[This is a Map instance holding extended configuration attributes that will be used in the Context environment. When working with TLS connections you need to make sure that the native LDAP pooling functionality is turned off. For example if using JNDI do not use attributes such as 'com.sun.jndi.ldap.connect.pool=true' will cause problems when using TLS.]]></description>
+                </parameter>
+            </parameters>
+        </connection>
+    </connections>
+    <extension name="LDAP">
+        <description><![CDATA[]]></description>
+        <parameters/>
+    </extension>
+    <operations>
+        <operation name="add">
+            <description><![CDATA[Creates a new LDAPEntry in the LDAP server. The entry should contain the distinguished name (DN), the <i>objectClass</i> attributes that define its structure and at least a value for all the required attributes (required attributes depend on the <i>object classes</i> assigned to the entry. You can refer to RFC 4519 for standard object classes and attributes.]]></description>
+            <parameters>
+                <parameter name="entry">
+                    <description><![CDATA[The LDAPEntry that should be added.]]></description>
+                </parameter>
+                <parameter name="structuralObjectClass">
+                    <description><![CDATA[The type of entry that will be added. If the entry doesn't have the objectClass attribute set, then this one will be used to retrieved the whole objectClass hierarchy. If performance is a requirement, don't rely on this functionality as several calls to the LDAP server will be done to trasverse the object class hierarchy.]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="addMultiValueAttribute">
+            <description><![CDATA[Adds all the values for an attribute in an existing LDAP entry. If the entry already contained a value (or values) for the given <i>attributeName</i> then these values will be added. The attribute should allow multiple values or an exception will be raised.]]></description>
+            <parameters>
+                <parameter name="dn">
+                    <description><![CDATA[The DN of the LDAP entry to modify]]></description>
+                </parameter>
+                <parameter name="attributeName">
+                    <description><![CDATA[The name of the attribute to add values to.]]></description>
+                </parameter>
+                <parameter name="attributeValues">
+                    <description><![CDATA[The values for the attribute]]></description>
+                </parameter>
+                <parameter name="ignoreInvalidAttribute">
+                    <description><![CDATA[If the attribute value to add is already present, then don't throw INVALID_ATTRIBUTE error]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="addSingleValueAttribute">
+            <description><![CDATA[Adds a value for an attribute in an existing LDAP entry. If the entry already contained a value for the given <i>attributeName</i> then this value will be added (only if the attribute is multi value and there entry didn't have the value already). <p/> If you want to add a value with a type different than String, then you can use the add-multi-value-attribute operation and define a one element list with the value.]]></description>
+            <parameters>
+                <parameter name="dn">
+                    <description><![CDATA[The DN of the LDAP entry to modify]]></description>
+                </parameter>
+                <parameter name="attributeName">
+                    <description><![CDATA[The name of the attribute to add a value to.]]></description>
+                </parameter>
+                <parameter name="attributeValue">
+                    <description><![CDATA[The value for the attribute]]></description>
+                </parameter>
+                <parameter name="ignoreInvalidAttribute">
+                    <description><![CDATA[If the attribute value to add is already present, then don't throw InvalidAttributeException]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="bind">
+            <description><![CDATA[Performs an LDAP bind (login) operation. After login there will be a LDAP connection pool ready to use for other operations using the authenticated user. If no values are provided to override <i>authDn</i> and <i>authPassword</i> then using this operation will just re-bind (re-authenticate) the user/password defined in the <i>config</i> element. If new values are provided for <i>authDn</i> and <i>authPassword</i>, then authentication will be performed. <p/> <h4>Re-authenticating and returning the LDAP entry using <i>config</i> level credentials (authDn & authPassword)</h4>]]></description>
+            <parameters>
+                <parameter name="authDn">
+                    <description><![CDATA[The Principal DN of the user]]></description>
+                </parameter>
+                <parameter name="authPassword">
+                    <description><![CDATA[The Password for Principal DN]]></description>
+                </parameter>
+                <parameter name="authentication">
+                    <description><![CDATA[The type of authentication]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="delete">
+            <description><![CDATA[Deletes the LDAP entry represented by the provided distinguished name. The entry should not have child entries, in which case a CONTEXT_NOT_EMPTY error is thrown. <p/> This operation is idempotent. It succeeds even if the terminal atomic name is not bound in the target context, but throws NAME_NOT_FOUND error if any of the intermediate contexts do not exist.]]></description>
+            <parameters>
+                <parameter name="dn">
+                    <description><![CDATA[The DN of the LDAP entry to delete]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="deleteMultiValueAttribute">
+            <description><![CDATA[Deletes all the values matching <i>attributeValues</i> of the attribute defined by <i>attributeName</i>. Values that are not present in the entry are ignored. If no values are specified, then the whole attribute is deleted from the entry.]]></description>
+            <parameters>
+                <parameter name="dn">
+                    <description><![CDATA[The DN of the LDAP entry to modify]]></description>
+                </parameter>
+                <parameter name="attributeName">
+                    <description><![CDATA[The name of the attribute to delete its values.]]></description>
+                </parameter>
+                <parameter name="attributeValues">
+                    <description><![CDATA[The values that should be deleted.]]></description>
+                </parameter>
+                <parameter name="ignoreInvalidAttribute">
+                    <description><![CDATA[If the attribute or value to delete is not present, then don't throw INVALID_ATTRIBUTE error]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="deleteSingleValueAttribute">
+            <description><![CDATA[Deletes the value matching <i>attributeValue</i> of the attribute defined by <i>attributeName</i>. If the entry didn't have the value, then the entry stays the same. If no value is specified, then the whole attribute is deleted from the entry. <p/> If you want to delete a value with a type different than String, then you can use the delete-multi-value-attribute operation and define a one element list with the value.]]></description>
+            <parameters>
+                <parameter name="dn">
+                    <description><![CDATA[The DN of the LDAP entry to modify]]></description>
+                </parameter>
+                <parameter name="attributeName">
+                    <description><![CDATA[The name of the attribute to delete its value.]]></description>
+                </parameter>
+                <parameter name="attributeValue">
+                    <description><![CDATA[The value that should be deleted.]]></description>
+                </parameter>
+                <parameter name="ignoreInvalidAttribute">
+                    <description><![CDATA[If the attribute or value to delete is not present, then don't throw INVALID_ATTRIBUTE error]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="exists">
+            <description><![CDATA[Checks whether an LDAP entry exists in the LDAP server or not.]]></description>
+            <parameters>
+                <parameter name="dn">
+                    <description><![CDATA[The DN of the LDAP entry that will be retrieved.]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="ldapEntryToLdif">
+            <description><![CDATA[Transforms a LDAPEntry to a String in LDIF representation (RFC 2849).]]></description>
+            <parameters>
+                <parameter name="entry">
+                    <description><![CDATA[The LDAPEntry to transform to LDIF.]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="lookup">
+            <description><![CDATA[Retrieves an entry from the LDAP server base on its distinguished name (DN). DNs are the unique identifiers of an LDAP entry, so this method will perform a search based on this ID and so return a single entry as result or throw an exception if the DN is invalid or inexistent. <p/> Use this operation over #searchOne(LDAPConfiguration, LDAPConnectionWrapper, String, String, List, SearchScope, int, long, boolean, String) when you know the DN of the object you want to retrieve. <p/>]]></description>
+            <parameters>
+                <parameter name="dn">
+                    <description><![CDATA[The DN of the LDAP entry that will be retrieved.]]></description>
+                </parameter>
+                <parameter name="attributes">
+                    <description><![CDATA[A list of the attributes that should be returned in the result. If the attributes list is empty or null, then by default all LDAP entry attributes are returned.]]></description>
+                </parameter>
+                <parameter name="structuralObjectClass">
+                    <description><![CDATA[The type of entry that will be returned. Only for DataSense purposes to be used in Anypoint Studio IDE. Has no impact on runtime, that's why it is optional.]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="modify">
+            <description><![CDATA[Updates an existing LDAPEntry in the LDAP server. The entry should contain an existing distinguished name (DN), and at least a value for all the required attributes (required attributes depend on the <i>object classes</i> assigned to the entry. You can refer to RFC 4519 for standard object classes and attributes. <p/> When updating a LDAP entry, only the attributes in the entry passed as parameter are updated or added. If you need to delete an attribute, you should use the delete attribute operation. <p/> <b>Example:</b> Updating one attribute and adding one.<br/> <br/> <i>Original LDAP server entry</i>:<br/> <code> dn: cn=entry,ou=group,dc=company,dc=org<br/> cn: entry<br/> attr1: Value1<br/> attr2: Value2<br/> multi1: Value3<br/> multi1: Value4<br/> objectclass: top<br/> objectclass: myentry </code> <br/> <br/> <i>Entry map passed as parameter:</i><br/> <code> dn: cn=entry,ou=group,dc=company,dc=org<br/> attr1: NewValue<br/> attr3: NewAttributeValue </code> <br/> <br/> <i>Resulting LDAP server entry:</i><br/> <code> dn: cn=entry,ou=group,dc=company,dc=org<br/> cn: entry<br/> attr1: NewValue<br/> attr2: Value2<br/> multi1: Value3<br/> multi1: Value4<br/> attr3: NewAttributeValue<br/> objectclass: top<br/> objectclass: myentry </code>]]></description>
+            <parameters>
+                <parameter name="entry">
+                    <description><![CDATA[The LDAPEntry that should be updated.]]></description>
+                </parameter>
+                <parameter name="structuralObjectClass">
+                    <description><![CDATA[The type of entry that will be updated. Only for DataSense purposes to be used in Anypoint Studio IDE. Has no impact on runtime, that's why it is optional.]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="modifyMultiValueAttribute">
+            <description><![CDATA[Updates (replaces) the value or values of the attribute defined by <i>attributeName</i> with the new values defined by <i>attributeValues</i>. If the attribute was not present in the entry, then the value is added.]]></description>
+            <parameters>
+                <parameter name="dn">
+                    <description><![CDATA[The DN of the LDAP entry to modify]]></description>
+                </parameter>
+                <parameter name="attributeName">
+                    <description><![CDATA[The name of the attribute to update its values.]]></description>
+                </parameter>
+                <parameter name="attributeValues">
+                    <description><![CDATA[The new values for the attribute]]></description>
+                </parameter>
+                <parameter name="ignoreInvalidAttribute">
+                    <description><![CDATA[If the attribute value to modify is already present, then don't throw INVALID_ATTRIBUTE error]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="modifySingleValueAttribute">
+            <description><![CDATA[Updates (replaces) the value or values of the attribute defined by <i>attributeName</i> with the new value defined by <i>attributeValue</i>. If the attribute was not present in the entry, then the value is added. <p/> If you want to update a value with a type different than String, then you can use the update-multi-value-attribute operation and define a one element list with the value.]]></description>
+            <parameters>
+                <parameter name="dn">
+                    <description><![CDATA[The DN of the LDAP entry to modify]]></description>
+                </parameter>
+                <parameter name="attributeName">
+                    <description><![CDATA[The name of the attribute to update its value.]]></description>
+                </parameter>
+                <parameter name="attributeValue">
+                    <description><![CDATA[The new value for the attribute]]></description>
+                </parameter>
+                <parameter name="ignoreInvalidAttribute">
+                    <description><![CDATA[If the attribute value to modify is already present, then don't throw INVALID_ATTRIBUTE error]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="pagedResultSearch">
+            <description><![CDATA[Performs a LDAP search and streams result to the rest of the flow. This means that instead of returning a list with all results it partitions the LDAP search result into pages (individual entry if <i>resultPageSize</i> is 1) or lists of size <i>resultPageSize</i>. <p/> This is an <b>intercepting</b> operation what means that for each result (individual entry if <i>resultPageSize</i> is 1 or List of <i>resultPageSize</i> size) the rest of the flow will be executed. Each of these executions will return a result that will be aggregated into a List of results. <p/> <p/> For queries returning large results it is recommended to use pagination (not all LDAP servers support this or are configured to support it). For that you need to provide a fetch size (page size) value that should be less or equal than max results (count limit). If you are getting a Size Limit Exceeded exception message then you should check that the authenticated user has enough privileges or the LDAP server is not limited by configuration. In that case, just reduce the value of the fetch size. <p/>]]></description>
+            <parameters>
+                <parameter name="baseDn">
+                    <description><![CDATA[The base DN of the LDAP search.]]></description>
+                </parameter>
+                <parameter name="filter">
+                    <description><![CDATA[A valid LDAP filter. The LDAP connector supports LDAP search filters as defined in RFC 2254.]]></description>
+                </parameter>
+                <parameter name="attributes">
+                    <description><![CDATA[A list of the attributes that should be returned in the result. If the attributes list is empty or null, then by default all LDAP entry attributes are returned.]]></description>
+                </parameter>
+                <parameter name="scope">
+                    <description><![CDATA[The scope of the search. Valid attributes are: <ul> <li><b>OBJECT</b>: This value is used to indicate searching only the entry at the base DN, resulting in only that entry being returned (keeping in mind that it also has to meet the search filter criteria!)</li> <li><b>ONE_LEVEL</b>: This value is used to indicate searching all entries one level under the base DN - but not including the base DN and not including any entries under that one level under the base DN.</li> <li><b>SUB_TREE</b>: This value is used to indicate searching of all entries at all levels under and including the specified base DN.</li> </ul>]]></description>
+                </parameter>
+                <parameter name="timeout">
+                    <description><![CDATA[Search timeout in milliseconds. If the value is 0, this means to wait indefinitely.]]></description>
+                </parameter>
+                <parameter name="maxResults">
+                    <description><![CDATA[The maximum number of entries that will be returned as a result of the search. 0 indicates that all entries will be returned.]]></description>
+                </parameter>
+                <parameter name="returnObject">
+                    <description><![CDATA[Enables/disables returning objects returned as part of the result. If disabled, only the name and class of the object is returned. If enabled, the object will be returned.]]></description>
+                </parameter>
+                <parameter name="pageSize">
+                    <description><![CDATA[If the LDAP server supports paging results set in this attribute the size of the page. If the pageSize is less or equals than 0, then paging will be disabled.]]></description>
+                </parameter>
+                <parameter name="orderBy">
+                    <description><![CDATA[Name of the LDAP attribute used to sort results.]]></description>
+                </parameter>
+                <parameter name="ascending">
+                    <description><![CDATA[If <i>orderBy</i> was set, whether to sort in ascending or descending order.]]></description>
+                </parameter>
+                <parameter name="structuralObjectClass">
+                    <description><![CDATA[The type of entry that will be returned. Only for DataSense purposes to be used in Anypoint Studio IDE. Has no impact on runtime, that's why it is optional.]]></description>
+                </parameter>
+                <parameter name="fetchSize">
+                    <description><![CDATA[The maximum number of LDAP entries retrieved at once per page]]></description>
+                </parameter>
+                <parameter name="streamingStrategy">
+                    <description><![CDATA[Configure if repeatable streams should be used and their behaviour]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="rename">
+            <description><![CDATA[Renames an existing LDAP entry (moves an entry from a DN to another one).]]></description>
+            <parameters>
+                <parameter name="oldDn">
+                    <description><![CDATA[DN of the existing entry that will be renamed.]]></description>
+                </parameter>
+                <parameter name="newDn">
+                    <description><![CDATA[Destination DN]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="search">
+            <description><![CDATA[Performs a LDAP search returning a list with all the resulting LDAP entries. <p/> For queries returning large results it is recommended to use pagination (not all LDAP servers support this or are configured to support it). For that you need to provide a page size value that should be less or equal than max results (count limit). If you are getting a Sizelimit Exceeded exception then you should check that the authenticated user has enough privileges or the LDAP server is not limited by configuration.]]></description>
+            <parameters>
+                <parameter name="baseDn">
+                    <description><![CDATA[The base DN of the LDAP search.]]></description>
+                </parameter>
+                <parameter name="filter">
+                    <description><![CDATA[A valid LDAP filter. The LDAP connector supports LDAP search filters as defined in RFC 2254.]]></description>
+                </parameter>
+                <parameter name="attributes">
+                    <description><![CDATA[A list of the attributes that should be returned in the result. If the attributes list is empty or null, then by default all LDAP entry attributes are returned.]]></description>
+                </parameter>
+                <parameter name="scope">
+                    <description><![CDATA[The scope of the search. Valid attributes are: <ul> <li><b>OBJECT</b>: This value is used to indicate searching only the entry at the base DN, resulting in only that entry being returned (keeping in mind that it also has to meet the search filter criteria)</li> <li><b>ONE_LEVEL</b>: This value is used to indicate searching all entries one level under the base DN - but not including the base DN and not including any entries under that one level under the base DN.</li><li><b>SUB_TREE</b>: This value is used to indicate searching of all entries at all levels under and including the specified base DN.</li></ul>]]></description>
+                </parameter>
+                <parameter name="timeout">
+                    <description><![CDATA[Search timeout in milliseconds. If the value is 0, this means to wait indefinitely.]]></description>
+                </parameter>
+                <parameter name="maxResults">
+                    <description><![CDATA[The maximum number of entries that will be returned as a result of the search. 0 indicates that all entries will be returned.]]></description>
+                </parameter>
+                <parameter name="returnObject">
+                    <description><![CDATA[Enables/disables returning objects returned as part of the result. If disabled, only the name and class of the object is returned. If enabled, the object will be returned.]]></description>
+                </parameter>
+                <parameter name="pageSize">
+                    <description><![CDATA[If the LDAP server supports paging results set in this attribute the size of the page. If the pageSize is less or equals than 0, then paging will be disabled.]]></description>
+                </parameter>
+                <parameter name="structuralObjectClass">
+                    <description><![CDATA[The type of entry that will be returned. Only for DataSense purposes to be used in Anypoint Studio IDE. Has no impact on runtime, that's why it is optional.]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="searchOne">
+            <description><![CDATA[Performs a LDAP search that is supposed to return a unique result. If the search returns more than one result, then a warn log message is generated and the first element of the result is returned. <p/> Use this operation over #lookup(LDAPConfiguration, LDAPConnectionWrapper, String, List, String) when you know don't know the DN of the entry you need to retrieve but you have a set of attributes that you know should return a single entry (for example an email address)]]></description>
+            <parameters>
+                <parameter name="baseDn">
+                    <description><![CDATA[The base DN of the LDAP search.]]></description>
+                </parameter>
+                <parameter name="filter">
+                    <description><![CDATA[A valid LDAP filter. The LDAP connector supports LDAP search filters as defined in RFC 2254.]]></description>
+                </parameter>
+                <parameter name="attributes">
+                    <description><![CDATA[A list of the attributes that should be returned in the result. If the attributes list is empty or null, then by default all LDAP entry attributes are returned.]]></description>
+                </parameter>
+                <parameter name="scope">
+                    <description><![CDATA[The scope of the search. Valid attributes are: <ul> <li><b>OBJECT</b>: This value is used to indicate searching only the entry at the base DN, resulting in only that entry being returned (keeping in mind that it also has to meet the search filter criteria!)</li> <li><b>ONE_LEVEL</b>: This value is used to indicate searching all entries one level under the base DN - but not including the base DN and not including any entries under that one level under the base DN.</li> <li><b>SUB_TREE</b>: This value is used to indicate searching of all entries at all levels under and including the specified base DN.</li> </ul>]]></description>
+                </parameter>
+                <parameter name="timeout">
+                    <description><![CDATA[Search timeout in milliseconds. If the value is 0, this means to wait indefinitely.]]></description>
+                </parameter>
+                <parameter name="maxResults">
+                    <description><![CDATA[The maximum number of entries that will be returned as a result of the search. 0 indicates that all entries will be returned.]]></description>
+                </parameter>
+                <parameter name="returnObject">
+                    <description><![CDATA[Enables/disables returning objects returned as part of the result. If disabled, only the name and class of the object is returned. If enabled, the object will be returned.]]></description>
+                </parameter>
+                <parameter name="structuralObjectClass">
+                    <description><![CDATA[The type of entry that will be returned. Only for DataSense purposes to be used in Anypoint Studio IDE. Has no impact on runtime, that's why it is optional.]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="unbind">
+            <description><![CDATA[Closes the current connection, forcing the login operation (bind) the next time it is used. <p/>]]></description>
+            <parameters>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+    </operations>
+    <sources/>
+</extension-documentation>

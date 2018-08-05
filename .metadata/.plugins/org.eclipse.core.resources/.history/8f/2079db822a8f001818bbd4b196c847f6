@@ -1,0 +1,449 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd  http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+    <flow name="case-api-main">
+        <http:listener path="/case-s-api/*" doc:name="Listener" config-ref="HTTP_Domain_Listener_config">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+            </http:error-response>
+        </http:listener>
+        <flow-ref doc:name="fetchToken" doc:id="388dc20a-13b2-40fb-94b6-65477089dd6f" name="fetchToken" />
+        <apikit:router doc:name="APIkit Router" config-ref="case-api-config"/>
+        <error-handler>
+            <on-error-propagate type="APIKIT:BAD_REQUEST">
+                <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="b81580c2-701e-4bb0-9156-0956542c0ef3">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Bad request"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[400]]></ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="8bdd9369-f1fd-468c-a3bb-722383181887">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[404]]></ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+                <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Method not allowed"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+                <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not acceptable"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="f9a287db-f9b0-4474-acb2-746d9f4de5fe">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Unsupported media type"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[415]]></ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+                <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="1511b6e8-21de-4305-820c-61250d6fac0d">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not Implemented"}]]></ee:set-payload>
+						<ee:set-attributes ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-attributes>
+                    
+</ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[501]]></ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="case-api-console">
+        <apikit:console doc:name="APIkit Console" config-ref="case-api-config"/>
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="863a77d7-740c-4ea7-9330-1a5b75913dcf">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[404]]></ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="put:\cases\(caseId)\documents:case-api-config">
+        <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="e022fafc-00c4-48de-aa06-1a5947e7f052">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  url: "C:\\Fenergo_TEMP\\anz\\DocStorage\\2018\\16\\2_180416015511005_doc.txt"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\cases\(caseId)\status:case-api-config">
+        <http:request method="GET" doc:name="Request" doc:id="0f011465-6e0f-4e39-a976-8180a007f7e2" config-ref="Fenergo_HTTP_Request_configuration" path='#["/anz.Api.Entity/entitydata/Case/" ++ attributes.uriParams.caseId ++ "/poc_vwCaseInfo/"]' requestStreamingMode="NEVER">
+            <http:headers ><![CDATA[#[output applicaton/java
+---
+{
+	Authorization : vars.Token
+}]]]></http:headers>
+        </http:request>
+    </flow>
+    <flow name="get:\legal-entities\(CRN):case-api-config">
+        <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="ef1e7ebc-bd66-45e3-8388-9c6a09ec7f67">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+    requestContext: "LegalEntity",
+    dataSourceName: "FenergoIndex",
+    searchCriteria: 
+        [
+            {
+                name: "ReferenceId",
+                "type": "string",
+                matchType: "Exact",
+                value: attributes.uriParams.CRN
+            }
+        ],
+    pagerRequest: 
+        {
+            minRowNumber: 1,
+            maxRowNumber: 10,
+            sortDirection: "DESC",
+            sortingColumn: "LastUpdatedDate"
+        },
+    groupOperator: "AND"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+		<http:request method="POST" doc:name="POST: /anz.Api.search/entitysearch" doc:id="fa537c9a-c270-47f3-9338-5746cfc36f86" config-ref="Fenergo_HTTP_Request_configuration" path="/anz.Api.search/entitysearch" requestStreamingMode="NEVER">
+			<http:headers ><![CDATA[#[output applicaton/java
+---
+{
+	Authorization : vars.Token
+}]]]></http:headers>
+		</http:request>
+    </flow>
+    <flow name="get:\cases\(caseId):case-api-config">
+        <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="4af8fc80-c47e-4942-85b0-a855fff1ac31">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	requestContext: "Case",
+	dataSourceName: "FenergoIndex",
+	searchCriteria: 
+	    [
+	        {
+	        name: "EntityId",
+	        "type": "int",
+	        matchType: "Exact",
+	        value: attributes.uriParams.caseId as Number
+	        }
+	    ],
+	pagerRequest: 
+	    {
+	    minRowNumber: 1,
+	    maxRowNumber: 10,
+	    sortDirection: "DESC",
+	    sortingColumn: "LastUpdatedDate"
+	    },
+	groupOperator: "AND"
+}]]></ee:set-payload>
+            </ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="httpStatus" ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-variable>
+			</ee:variables>
+        
+</ee:transform>
+		<http:request method="POST" doc:name="POST: /anz.API.search/entitysearch" doc:id="7b1e5e5f-1560-4d37-b866-4adf94c6d131" config-ref="Fenergo_HTTP_Request_configuration" path="/anz.Api.search/entitysearch" requestStreamingMode="NEVER">
+			<http:headers ><![CDATA[#[output applicaton/java
+---
+{
+	Authorization : vars.Token
+}]]]></http:headers>
+		</http:request>
+    </flow>
+    <flow name="post:\legal-entities\(CRN)\addresses:case-api-config">
+		<http:request method="POST" doc:name="Request" doc:id="e049ff3e-247e-4de7-bbc6-5f0026ce7dc1" config-ref="Fenergo_HTTP_Request_configuration" path="/anz.Api.Entity/entitydata" requestStreamingMode="NEVER">
+			<http:headers ><![CDATA[#[output applicaton/java
+---
+{
+	Authorization : vars.Token
+}]]]></http:headers>
+		</http:request>
+    </flow>
+    <flow name="get:\legal-entities\(CRN)\cases:case-api-config" doc:id="74c33ee3-0600-45f5-9f6c-cbd549824ecc">
+        <choice doc:name="queryParameter open == true?" doc:id="5a132c9f-ab96-49e8-8b70-8a91fef1b62c">
+            <when expression="attributes.queryParams.open == &quot;true&quot;">
+                <ee:transform doc:name="Set static payload for open cases" doc:id="cf704263-c654-4dcd-8550-b0d2d56d6715">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+    requestContext: "Case",
+    dataSourceName: "FenergoIndex",
+    searchCriteria: 
+        [
+            {
+                name: "Customer_No",
+                "type": "string",
+                matchType: "Exact",
+                value: attributes.uriParams.CRN
+            },
+            {
+                name: "CaseStatusId",
+                "type": "int",
+                matchType: "NotEquals",
+                value: 5001
+            },
+            {
+                name: "CaseStatusId",
+                "type": "int",
+                matchType: "NotEquals",
+                value: 18
+            }
+        ],
+    pagerRequest: 
+        {
+        minRowNumber: 1,
+        maxRowNumber: 10,
+        sortDirection: "DESC",
+        sortingColumn: "LastUpdatedDate"
+        },
+    groupOperator: "AND"
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </when>
+            <otherwise>
+                <ee:transform doc:name="Set Static payload for all cases" doc:id="9234eb4c-0f8c-4fe2-ba81-6cd6c081acf9">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	requestContext: "Case",
+	dataSourceName: "FenergoIndex",
+	searchCriteria: [{
+		name: "Customer_No",
+		"type": "string",
+		matchType: "Exact",
+		value: attributes.uriParams.CRN
+	}],
+	pagerRequest: {
+		minRowNumber: 1,
+		maxRowNumber: 10,
+		sortDirection: "DESC",
+		sortingColumn: "LastUpdatedDate"
+	},
+	groupOperator: "AND"
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </otherwise>
+        </choice>
+        <http:request method="POST" doc:name="POST: /anz.API.search/entitysearch" doc:id="422402ca-dce6-4a86-8b77-259afe06bf53" config-ref="Fenergo_HTTP_Request_configuration" path="/anz.Api.search/entitysearch" requestStreamingMode="NEVER">
+            <http:headers><![CDATA[#[output applicaton/java
+---
+{
+	Authorization : vars.Token
+}]]]></http:headers>
+        </http:request>
+    </flow>
+    <flow name="post:\legal-entities\(CRN)\cases:case-api-config">
+		<http:request method="POST" doc:name="Request" doc:id="f89b7859-97df-4df2-9859-63f18c76c163" config-ref="Fenergo_HTTP_Request_configuration" path="/anz.Api.Entity/entitydata" requestStreamingMode="NEVER">
+			<http:headers ><![CDATA[#[output applicaton/java
+---
+{
+	Authorization : vars.Token
+}]]]></http:headers>
+		</http:request>
+    </flow>
+    <flow name="post:\cases\(caseId)\documents\complete:case-api-config">
+		<http:request method="POST" doc:name="POST: /anz.Api.Entity/entitymethod" doc:id="8ff4ecd9-baef-4597-8758-6e8b5eb4dac8" config-ref="Fenergo_HTTP_Request_configuration" path="/anz.Api.Entity/entitymethod">
+			<http:headers ><![CDATA[#[output applicaton/java
+---
+{
+	Authorization : vars.Token
+}]]]></http:headers>
+		</http:request>
+    </flow>
+    <flow name="get:\cases\(caseId)\documents:case-api-config">
+        <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="a643b623-942a-45ab-af21-73c05f390f8a" doc:name="Formulate Request body">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+    requestContext: "requestedDocumentsSearch",
+    dataSourceName: "Fenergo",
+    pagerRequest: 
+        {
+            sortDirection: "ASC",
+            sortingColumn: "DocumentRequirementId",
+            minRowNumber: if (attributes.queryParams.minRowNumber != null) attributes.queryParams.minRowNumber as Number else 1,
+            maxRowNumber: if (attributes.queryParams.maxRowNumber != null) attributes.queryParams.maxRowNumber as Number else 100
+        },
+    searchCriteria: 
+        [
+            {
+                name: "CaseId",
+                "type": "int",
+                matchType: "Exact",
+                value: attributes.uriParams.caseId as Number
+            }
+        ]
+}
+]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+		<http:request method="POST" doc:name="POST: /anz.Api.search/entitysearch" doc:id="4b927a88-be6b-4a59-9ee7-83cb0e60e93c" config-ref="Fenergo_HTTP_Request_configuration" path="/anz.Api.search/entitysearch" requestStreamingMode="NEVER">
+			<http:headers ><![CDATA[#[output applicaton/java
+---
+{
+	Authorization : vars.Token
+}]]]></http:headers>
+		</http:request>
+    </flow>
+    <flow name="post:\cases\(caseId)\idv:case-api-config">
+        <http:request method="PUT" doc:name="Request" doc:id="28dbfc55-ec20-4a12-8b62-9ecb9d74295e" config-ref="Fenergo_HTTP_Request_configuration" path="/anz.Api.Entity/entitydata" requestStreamingMode="NEVER">
+            <http:headers><![CDATA[#[output applicaton/java
+---
+{
+	Authorization : vars.Token
+}]]]></http:headers>
+        </http:request>
+    </flow>
+    <flow name="post:\legal-entities:case-api-config">
+        <http:request method="POST" doc:name="Request" doc:id="a4dbb632-d957-48fd-8913-52c206cf3ee4" config-ref="Fenergo_HTTP_Request_configuration" path="/anz.Api.Entity/entitydata" requestStreamingMode="NEVER">
+            <http:headers><![CDATA[#[output applicaton/java
+---
+{
+	Authorization : vars.Token
+}]]]></http:headers>
+        </http:request>
+    </flow>
+    <flow name="post:\cases\(caseId)\terms-and-conditions:case-api-config">
+        <http:request method="POST" doc:name="POST: /anz.Api.Entity/entitymethod" doc:id="dce98825-ccdd-432e-9353-6eb5cb4b04d9" config-ref="Fenergo_HTTP_Request_configuration" path="/anz.Api.Entity/entitymethod" requestStreamingMode="NEVER">
+            <http:headers><![CDATA[#[output applicaton/java
+---
+{
+	Authorization : vars.Token
+}]]]></http:headers>
+        </http:request>
+    </flow>
+    <flow name="get:\cases\(caseId)\account:case-api-config" doc:id="ec29d413-7ac1-4271-9955-94f1cc5b0210">
+        <ee:transform doc:name="Transform Message" doc:id="4c97b781-8923-407a-9d98-2a449ee02db7">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+    requestContext: "poc_vwProductAccount",
+    dataSourceName: "Fenergo",
+    searchCriteria: 
+        [
+            {
+                name: "CaseId",
+                "type": "int",
+                matchType: "Exact",
+                value: attributes.uriParams.caseId
+            }
+        ],
+    pagerRequest: 
+    {
+        minRowNumber: 1,
+        maxRowNumber: 10,
+        sortDirection: "DESC",
+        sortingColumn: "CaseId"
+    },
+    groupOperator: "AND"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+        <http:request method="POST" doc:name="POST: /anz.Api.search/entitySearch" doc:id="eda2c61a-e32f-48e3-8c1a-7f81e07d3126" config-ref="Fenergo_HTTP_Request_configuration" path="/anz.Api.search/entitySearch" requestStreamingMode="NEVER">
+            <http:headers><![CDATA[#[output applicaton/java
+---
+{
+	Authorization : vars.Token
+}]]]></http:headers>
+        </http:request>
+    </flow>
+	<flow name="post:\cases\(caseId)\trigger-accept:case-api-config" doc:id="a51e578a-a18d-44a0-8aaf-b37b7addb73e" >
+		<http:request method="POST" doc:name="Request" doc:id="f98fbea6-4895-4eba-bc45-9f9ccb29e7b7" config-ref="Fenergo_HTTP_Request_configuration" path="/anz.Api.Entity/entitymethod" requestStreamingMode="NEVER">
+			<http:headers ><![CDATA[#[output applicaton/java
+---
+{
+	Authorization : vars.Token
+}]]]></http:headers>
+		</http:request>
+	</flow>
+	<flow name="fetchToken" doc:id="99bc37a1-202a-4eb0-bf69-1faad29392ac">
+        <http:request method="GET" doc:name="GET: /getToken" doc:id="2c494181-ae66-4af4-bc10-fe3bb12bf0a3" config-ref="Token_Fetcher_HTTP_Request_configuration" path="${tokenfetcher.endpoint}" target="Token" outputMimeType="text/plain" />
+        <ee:transform doc:name="Transform Message" doc:id="e7e4df06-ba87-4513-8e4c-b4c2a1f127fc">
+            <ee:message />
+            <ee:variables>
+                <ee:set-variable variableName="Token"><![CDATA[%dw 2.0
+output application/java
+---
+vars.Token as String]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+    </flow>
+</mule>

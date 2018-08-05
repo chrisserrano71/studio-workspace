@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	
+	
+	<configuration-properties doc:name="Configuration properties" doc:id="1b82c04f-23b1-4be1-a42b-9deb4c13fd29" file="mule-app.properties" />
+	<configuration-properties doc:name="Configuration properties" doc:id="e754d908-ab73-46cd-9e2c-a738c55d1815" file="${mule.env}.properties" />
+	<http:listener-config name="PaymentOrder-e-api-httpListenerConfig" doc:name="HTTP Listener config">
+        <http:listener-connection host="0.0.0.0" port="${http.port}" />
+    </http:listener-config>
+    <apikit:config name="PaymentOrder-e-api-config" raml="PaymentOrder-e-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" doc:name="Router"/>
+<!--  
+<api-gateway:autodiscovery apiId="15467300" doc:name="API Autodiscovery" doc:id="68ac9b6b-c208-44c2-a0f7-8c917787f65d" flowRef="PaymentOrder-e-api-main" />
+    -->
+    <http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="8c8ceb56-acd1-458c-b31b-78464c089242" basePath="${payment.base.path}" responseTimeout="300000">
+		<http:request-connection host="${payment.api.host}" port="${payment.http.port}" connectionIdleTimeout="300000"/>
+	</http:request-config>
+	
+	
+	
+	
+</mule>

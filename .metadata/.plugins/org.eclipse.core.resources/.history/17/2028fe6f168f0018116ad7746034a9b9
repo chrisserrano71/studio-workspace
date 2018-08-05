@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="88143a5e-1750-419a-baf0-b4e8c593a7ac" >
+		<http:listener-connection host="0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="testFlow1" doc:id="db0dffb7-96c7-4960-91ba-ac1c54d6a0b7" >
+		<http:listener doc:name="Listener" doc:id="8956c5d7-270c-4df5-8d6b-9fe03cb62df8" />
+		<choice doc:name="Choice" doc:id="2afe0e54-90c8-47bf-8488-2a392e4f22ed" >
+			<otherwise >
+				<flow-ref doc:name="Flow Reference" doc:id="6e29b640-2100-4ee5-bb3a-879b33db4fbd" name="testFlow"/>
+			</otherwise>
+		</choice>
+		<error-handler>
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="09bc5545-9bd4-405f-8b49-e03f8ba85f7e" />
+		</error-handler>
+	</flow>
+	<error-handler name="testError_Handler" doc:id="682ee532-66ea-4b34-b38e-b6d0f998becb" />
+	<flow name="testFlow" doc:id="f3ff36ef-693e-4462-a641-859647de8b9c" >
+		<jms:listener doc:name="Listener" doc:id="ab4bfbb0-81be-4ab7-93d5-65d7a2831402" />
+		<set-variable value="test" doc:Name="Set Variable" doc:id="952f9889-6507-4a40-9453-b7bc520ce44e" variableName="test"/>
+		<choice doc:name="Choice" doc:id="26cab7e7-0b4b-4e7b-a2f6-e2cf9b9b778a" />
+		<error-handler >
+			<on-error-propagate doc:name="On Error Propagate" doc:id="2cf91c3c-dcf0-4cad-98c0-f9ccfb155fc6" type="EXPRESSION" enableNotifications="true" logException="true"/>
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="3e9435cb-d051-43cd-bc7b-526914f78e1f" type="ANY"/>
+		</error-handler>
+	</flow>
+</mule>

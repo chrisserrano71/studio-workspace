@@ -1,0 +1,22 @@
+{
+  "configs": [
+    "alh-sampleproject.xml"
+  ],
+  "secureProperties": [],
+  "redeploymentEnabled": true,
+  "name": "alh-sampleproject",
+  "minMuleVersion": "4.1.2",
+  "requiredProduct": "MULE_EE",
+  "classLoaderModelLoaderDescriptor": {
+    "id": "mule",
+    "attributes": {
+      "exportedResources": [
+        "log4j2.xml"
+      ]
+    }
+  },
+  "bundleDescriptorLoader": {
+    "id": "mule",
+    "attributes": {}
+  }
+}

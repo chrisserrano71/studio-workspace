@@ -1,0 +1,12 @@
+encrypted.key=![nHWo5JhNAYM+TzxqeHdRDXx15Q5R56YVGiQgXCoBJew=]
+
+api.id=15379993
+
+payment.api.host=integration-test.showcaseanz.com
+payment.http.port=9091
+payment.base.path=/Payments-p-api
+customer.profile.host=integration-test.showcaseanz.com
+customer.profile.base.path=/CustomerProfile-s-api/
+
+customer.profile.http.port=9091
+enc.key=2425

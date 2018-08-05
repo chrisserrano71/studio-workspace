@@ -1,0 +1,10 @@
+fenergo.host=clm.showcaseanz.com
+fenergo.port=80
+fenergo.basepath=/
+
+tokenfetcher.host=integration.showcaseanz.com
+tokenfetcher.port=8083
+tokenfetcher.basepath=/
+tokenfetcher.endpoint=/getToken
+
+api.id=13282945
