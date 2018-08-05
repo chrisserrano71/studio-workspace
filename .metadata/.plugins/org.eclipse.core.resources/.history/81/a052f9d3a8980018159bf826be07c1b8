@@ -3,7 +3,7 @@ pipeline{
  stages {
  	stage ('Build'){
  		steps {
- 				bat 'mvn -f alh-test/pom.xml clean compile'
+ 				bat 'mvn clean compile'
  		}
  	}
  
