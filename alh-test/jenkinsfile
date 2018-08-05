@@ -1,0 +1,17 @@
+pipeline{
+ agent any
+ environment {
+    ANYPOINT = credentials('ANYPOINT')
+ }
+ stages {
+ 	stage ('Build'){
+ 		steps {
+ 			withMaven(maven:'maven'){
+ 				sh 'mvn -f alh-test/pom.xml clean install'
+ 			}
+ 		}
+ 	}
+ 
+ }
+
+}
