@@ -8,7 +8,7 @@ pipeline{
  	}
  	stage ('Build'){
  		steps {
- 				bat 'mvn -f alh-test/alh-test clean compile'
+ 				bat 'mvn clean compile'
  		}
  	}
  
